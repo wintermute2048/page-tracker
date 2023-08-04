@@ -49,6 +49,40 @@ py -m isort src/ --check # sorting inputs
 py -m flake8 src/ # PEP 8 style
 py -m bandit -r src/ # security issues
 ```
-- [x] write Dockerfile and build with `docker build -t page-tracker .`
+- [x] write Dockerfile and build.
     - make multi-stage Dockerfile
-- [] initialize git and use its hash to tag the docker image
+    - initialize git and use its hash to tag the docker image
+```
+docker build -t page-tracker:$(git rev-parse --short HEAD) .
+```
+
+- push it to Docker Hub
+```
+docker login -u wintermute2048
+docker tag page-tracker:43fc387 wintermute2048/page-tracker:43fc387
+#docker images # see images
+#docker rmi # remove a tag
+#docker image rm repo:tag # remove image
+docker push wintermute2048/page-tracker:43fc387
+docker tag page-tracker:latest wintermute2048/page-tracker:latest
+docker push wintermute2048/page-tracker:latest
+```
+
+- run the uploaded docker image
+```
+docker run -p 80:5000 --name web-service wintermute2048/page-tracker
+# ctrl-c
+docker ps -a
+docker rm <CONTAINER_ID>
+```
+
+- create mount for redis container
+```
+docker volume create redis-volume
+docker run -d -v redis-volume:/data --network page-tracker-network --name redis-service redis:7.0.10-bullseye
+docker run -d -p 80:5000 -e REDIS_URL=redis://redis-service:6379 --network page-tracker-network --name web-service wintermute2048/page-tracker
+```
+
+- create `docker-compose` file and move current project to subfolder `web/`, which requires to recreate `venv`, then delete all current docker containers, networks and volumes.
+
+- add gunicorn as wsgi server
