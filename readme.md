@@ -85,4 +85,14 @@ docker run -d -p 80:5000 -e REDIS_URL=redis://redis-service:6379 --network page-
 
 - create `docker-compose` file and move current project to subfolder `web/`, which requires to recreate `venv`, then delete all current docker containers, networks and volumes.
 
-- add gunicorn as wsgi server
+- add gunicorn as wsgi server, add entry-point to docker compose and rebuild and start with `docker compose up -d --build`
+
+Now I should be able to run E2E tests again.
+PROBLEM: I can't connect to the docker image from the host pc. But I continue for now, because this will be handled differently soon..
+
+- add test-service to docker compose and run it
+```
+docker compose --profile testing up -d
+docker compose ps -a # see that test exited
+docker compose logs test-service
+```
