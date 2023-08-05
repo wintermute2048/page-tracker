@@ -97,3 +97,7 @@ docker compose logs test-service
 ```
 
 - create github workflow
+
+- protect main branch, test this by breaking a unit test, fix it again and merge
+
+- Completed!
